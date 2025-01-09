@@ -1,0 +1,22 @@
+# Utiliser une image de base Python légère
+FROM python:3.9-slim
+
+# Définir le répertoire de travail
+WORKDIR /app
+
+# Copier et installer les dépendances
+COPY requirements.streamlit.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copier les fichiers nécessaires pour l'application
+COPY .env .
+COPY streamlit/ .
+
+# Variables d'environnement pour MLflow
+ENV MLFLOW_TRACKING_URI=${NEON_DATABASE_URL}
+
+# Exposer le port utilisé par Streamlit
+EXPOSE 8501
+
+# Commande de démarrage de Streamlit
+CMD ["streamlit", "run", "app.py"]

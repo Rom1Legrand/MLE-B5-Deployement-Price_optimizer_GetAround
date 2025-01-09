@@ -1,0 +1,117 @@
+# Version locale par défaut avec option NeonDB en commentaires
+# services:
+
+services:
+
+  # Option 1 (default): Local MLflow PostgreSQL / pas utilisé si option 2 NeonDB
+  mlflow-postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: mlflow
+      POSTGRES_PASSWORD: mlflow
+      POSTGRES_DB: mlflow
+    volumes:
+      - mlflow-db-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "mlflow"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+    networks:
+      - default
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+      - .secrets
+    volumes:
+      - ./streamlit:/app
+    depends_on:
+      - mlflow-postgres
+    networks:
+      - default
+
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile.fastapi
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+      - .secrets
+    depends_on:
+      - mlflow
+    networks:
+      - default
+
+  # Option 1 (default): Local MLflow configuration
+  #mlflow:
+  #  build:
+  #    context: .
+  #    dockerfile: Dockerfile.mlflow
+  #  ports:
+  #    - "5000:5000"
+  #  env_file:
+  #    - .env
+  #   - .secrets
+  #  command: >
+  #    sh -c '
+  #    echo "Testing connection to PostgreSQL with URL: ${MLFLOW_DB_URL}" &&
+  #    mlflow server 
+  #    --host 0.0.0.0 
+  #    --port 5000 
+  #    --backend-store-uri "${MLFLOW_DB_URL}"
+  #    --default-artifact-root s3://${S3_BUCKET}/mlflow/ 
+  #    --serve-artifacts'
+  #  depends_on:
+  #    mlflow-postgres:
+  #      condition: service_healthy
+  #  networks:
+  #    - default
+
+  # Option 2: NeonDB MLflow configuration
+  # Pour utiliser NeonDB:
+  # 1. Commentez la section mlflow ci-dessus
+  # 2. Décommentez la section suivante
+  mlflow:
+     build:
+       context: .
+       dockerfile: Dockerfile.mlflow
+       args:
+         - NEON_DATABASE_URL=${NEON_DATABASE_URL}
+     ports:
+       - "5000:5000"
+     environment:
+       NEON_DATABASE_URL: "${NEON_DATABASE_URL}"
+       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+       S3_BUCKET: "${S3_BUCKET}"
+     env_file:
+       - .env
+       - .secrets
+     command: >
+       sh -c '
+       echo "Testing connection to NeonDB with URL: ${NEON_DATABASE_URL}" &&
+       mlflow server 
+       --host 0.0.0.0 
+       --port 5000 
+       --backend-store-uri "${NEON_DATABASE_URL}"
+       --default-artifact-root s3://${S3_BUCKET}/mlflow/ 
+       --serve-artifacts'
+     networks:
+       - default
+
+networks:
+  default:
+    name: infra_MLOPS
+    driver: bridge
+
+volumes:
+  postgres-db-volume:
+  mlflow-db-volume:
