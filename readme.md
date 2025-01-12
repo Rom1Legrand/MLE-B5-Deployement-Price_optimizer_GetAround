@@ -138,5 +138,5 @@ curl -X POST "http://localhost:8000/predict" \
 ```
 
 ## 🌐 Deployment
-- API deployed on [en cours]
+- API deployed on [https://mle-b5-deployement-price-optimizer.onrender.com/docs] > care it's slow 
 - Dashboard available at [en cours]
