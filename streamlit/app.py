@@ -97,7 +97,7 @@ if st.button('Calculer le prix recommandé'):
 # Charger les données sur le marché
 @st.cache_data
 def load_data():
-    df = pd.read_csv('get_around_pricing_project_clean.csv')
+    df = pd.read_csv('streamlit/get_around_pricing_project_clean.csv') #si test en ajoutant streamlit/..si pb en local supprimer
     return df
 
 df = load_data()
@@ -146,7 +146,7 @@ with tab3:
     # Charger les données des retards
     @st.cache_data
     def load_delay_data():
-        return pd.read_excel('get_around_delay_analysis.xlsx')
+        return pd.read_excel('streamlit/get_around_delay_analysis.xlsx') #si test en ajoutant streamlit/..si pb en local supprimer)
     
     
     # Distribution des retards
