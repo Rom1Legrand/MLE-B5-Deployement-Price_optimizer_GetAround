@@ -81,7 +81,8 @@ git clone [repository-url]
 pip install -r requirements.txt
 
 # Build and run Docker container
-docker-compose up --build
+docker-compose build
+docker-compose up -d
 ```
 
 ## 🛠️ Components
@@ -139,4 +140,4 @@ curl -X POST "http://localhost:8000/predict" \
 
 ## 🌐 Deployment
 - API deployed on [https://mle-b5-deployement-price-optimizer.onrender.com/docs] > care it's slow 
-- Dashboard available at [en cours]
+- Dashboard available at [https://mle-b5-deployement-price-optimizer-9mz6.onrender.com/] > care it's slow 
