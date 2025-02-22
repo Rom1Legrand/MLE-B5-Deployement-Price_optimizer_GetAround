@@ -14,6 +14,16 @@ st.set_page_config(page_title="GetAround Pricing", page_icon="🚗")
 # Load environment variables
 load_dotenv()
 
+# Configuration explicite des credentials AWS
+aws_access_key = os.getenv('AWS_ACCESS_KEY_ID')
+aws_secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+
+s3 = boto3.client(
+    's3',
+    aws_access_key_id=aws_access_key,
+    aws_secret_access_key=aws_secret_key
+)
+
 # Load model from S3
 bucket = os.getenv('S3_BUCKET')
 model_path = "mlflow/models/xgboost_model_4e1d09c075954401b4323321c1c84fc5.joblib"
@@ -28,6 +38,16 @@ try:
     st.write("Modèle chargé avec succès")
 except Exception as e:
     st.error(f"Erreur chargement modèle: {e}")
+
+# Configuration explicite des credentials AWS
+aws_access_key = os.getenv('AWS_ACCESS_KEY_ID')
+aws_secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+
+s3 = boto3.client(
+    's3',
+    aws_access_key_id=aws_access_key,
+    aws_secret_access_key=aws_secret_key
+)
 
 # Titre et description
 st.title('GetAround Price Prediction 🚗')
